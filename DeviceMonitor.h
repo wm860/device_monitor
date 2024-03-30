@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <filesystem>
 
 #include <jsoncpp/json/json.h>
 
@@ -17,13 +18,23 @@ class Reader
 private:
     Json::Value dev_config_val;
     Json::Value dev_val;
-    std::string dev_type;
-    std::vector<std::tuple<std::string, std::string>> parameters;
+    std::vector<Json::Value> dev_vector;
 
 public:
     Reader();
-    void read(std::string filename);
     void read_config();
     void read_json(std::string filename);
-    void print();
+    void print_one();
+    // void print();
+};
+
+class DeviceMonitor
+{
+private:
+    std::vector<Reader> readers;
+
+public:
+    DeviceMonitor();
+    void get_statuses();
+    void print_all();
 };
