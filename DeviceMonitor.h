@@ -36,5 +36,6 @@ private:
 public:
     DeviceMonitor();
     void get_statuses();
+    void start();
     void print_all();
 };

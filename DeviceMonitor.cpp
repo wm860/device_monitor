@@ -125,7 +125,7 @@ void DeviceMonitor::get_statuses()
     for (const auto &entry : std::filesystem::directory_iterator(folder))
     {
         std::string filename = entry.path().filename().string();
-        std::cout << filename << "\t\t";
+        std::cout << filename << "\t:\t";
         Reader reader;
         reader.read_config();
         reader.read_json(filename);

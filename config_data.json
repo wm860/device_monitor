@@ -11,5 +11,9 @@
     "light": "string",
     "humidity": "float",
     "temperature": "float"
+  },
+  "lidar": {
+    "number": "int",
+    "using": "bool"
   }
 }
