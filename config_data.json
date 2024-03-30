@@ -1,0 +1,15 @@
+{
+  "power supplier": {
+    "voltage": "float",
+    "current": "float"
+  },
+  "barometer": {
+    "pressure": "float",
+    "compensated": "bool"
+  },
+  "radar": {
+    "light": "string",
+    "humidity": "float",
+    "temperature": "float"
+  }
+}

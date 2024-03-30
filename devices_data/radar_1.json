@@ -1,0 +1,7 @@
+{
+  "radar": {
+    "light": "on",
+    "humidity": 50.5,
+    "temperature": 25.1
+  }
+}
