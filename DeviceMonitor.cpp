@@ -3,7 +3,7 @@
 Reader::Reader()
 {
     std::cout << "Reading started" << std::endl;
-    std::ifstream f("config_data.json");
+    /*std::ifstream f("config_data.json");
     if (!f.is_open())
     {
         std::cerr << "Failed to open file." << std::endl;
@@ -13,10 +13,13 @@ Reader::Reader()
     {
         std::cout << "Configuration file opened" << std::endl;
     }
+
     f.close();
+    */
 }
 void Reader::read(std::string filename)
 {
+    /*
     std::string folder = "./devices_data";
     std::string path = folder + "/" + filename;
     std::ifstream f(path);
@@ -42,10 +45,32 @@ void Reader::read(std::string filename)
     {
         std::cout << "Failed to open the file." << std::endl;
     }
+    */
 }
-// void Reader::read_config()
-
-void Reader::read_json(std::string filename)
+void Reader::read_config()
+{
+    std::ifstream f("config_data.json");
+    if (!f.is_open())
+    {
+        std::cerr << "Failed to open file." << std::endl;
+        // exit;
+    }
+    else
+    {
+        std::cout << "Configuration file opened" << std::endl;
+    }
+    Json::Reader reader;
+    Json::Value val;
+    bool parsingSuccessful = reader.parse(f, val);
+    f.close();
+    if (!parsingSuccessful)
+    {
+        std::cerr << "Failed to parse JSON" << std::endl;
+        return;
+    }
+    dev_config_val = val;
+}
+void Reader::read_json(const std::string filename)
 {
     std::string folder = "./devices_data";
     std::string path = folder + "/" + filename;
@@ -66,14 +91,54 @@ void Reader::read_json(std::string filename)
         std::cerr << "Failed to parse JSON" << std::endl;
         // exit;
     }
-    float voltage = val["power supplier"]["voltage"].asFloat();
-    std::cout << "voltage:\t" << voltage << std::endl;
+    dev_val = val;
+    // float voltage = val["power supplier"]["voltage"].asFloat();
+    // std::cout << "voltage:\t" << voltage << std::endl;
 }
+
 void Reader::print()
 {
-    std::cout << "Device type: " << dev_type << std::endl;
-    for (auto &param : parameters)
+    if (dev_config_val.empty())
     {
-        std::cout << std::get<0>(param) << " " << std::get<1>(param) << std::endl;
+        std::cerr << "No configuration data" << std::endl;
+        return;
+    }
+    if (dev_val.empty())
+    {
+        std::cerr << "No device data" << std::endl;
+        return;
+    }
+    std::string type = dev_val["type"].asString();
+    if (dev_config_val.isMember(type.c_str()))
+    {
+        std::cout << "Given file exists in configuration file :)\n";
+        std::cout << type << " data:" << std::endl;
+        Json::Value device_params = dev_config_val[type];
+        for (auto it = device_params.begin(); it != device_params.end(); ++it)
+        {
+            std::string key = it.key().asString();
+            Json::Value value = *it;
+            // Json::Value dev_val
+            if (value.isString())
+            {
+                std::string val = dev_val[key].asString();
+                std::cout << key << ", Value: " << val << std::endl;
+            }
+            else if (value.isNumeric())
+            {
+                float val = dev_val[key].asFloat();
+                std::cout << key << ", Value: " << val << std::endl;
+            }
+            else if (value.isBool())
+            {
+                bool val = dev_val[key].asBool();
+                std::cout << key << ", Value: " << (val ? "true" : "false") << std::endl;
+            }
+        }
+        // std::cout << "Voltage:\t" << dev_val["voltage"].asFloat() << std::endl;
+    }
+    else
+    {
+        std::cerr << "No power supplier data" << std::endl;
     }
 }

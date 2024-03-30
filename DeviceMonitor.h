@@ -15,13 +15,15 @@
 class Reader
 {
 private:
+    Json::Value dev_config_val;
+    Json::Value dev_val;
     std::string dev_type;
     std::vector<std::tuple<std::string, std::string>> parameters;
 
 public:
     Reader();
     void read(std::string filename);
-    // void read_config();
+    void read_config();
     void read_json(std::string filename);
     void print();
 };
