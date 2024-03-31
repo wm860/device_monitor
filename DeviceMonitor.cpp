@@ -52,7 +52,6 @@ void Reader::read_json(const std::string filename)
     // float voltage = val["power supplier"]["voltage"].asFloat();
     // std::cout << "voltage:\t" << voltage << std::endl;
 }
-
 void Reader::print_one()
 {
     if (dev_config_val.empty())
@@ -100,21 +99,37 @@ void Reader::print_one()
         std::cerr << "No power supplier data" << std::endl;
     }
 }
-// void Reader::print(){}
-
 DeviceMonitor::DeviceMonitor()
 {
     std::cout << "Device Monitor started" << std::endl;
+    running = false;
 }
-void DeviceMonitor::get_statuses()
+// void DeviceMonitor::get_statuses()
+// {
+//     std::string folder = "./devices_data";
+//     for (const auto &entry : std::filesystem::directory_iterator(folder))
+//     {
+//         std::string filename = entry.path().filename().string();
+//         std::cout << filename << "\t:\t";
+//         Reader reader;
+
+//         reader.read_config();
+//         reader.read_json(filename);
+
+//         reader.print_one();
+//         readers.push_back(reader);
+//         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+//     }
+// }
+void DeviceMonitor::get_statuses(std::string filename)
 {
-    std::string folder = "./devices_data";
+    std::string folder = filename;
     for (const auto &entry : std::filesystem::directory_iterator(folder))
     {
         std::string filename = entry.path().filename().string();
         std::cout << filename << "\t:\t";
         Reader reader;
-        // te dwie operacje powinny byc w sekcji krytycznej??
+
         reader.read_config();
         reader.read_json(filename);
 
@@ -128,7 +143,7 @@ void DeviceMonitor::start()
     if (!running)
     {
         running = true;
-        monitorThreadPtr = std::make_unique<std::thread>(&DeviceMonitor::get_statuses, this);
+        monitorThreadPtr = std::make_unique<std::thread>(&DeviceMonitor::get_statuses, this, "devices_data");
     }
 }
 void DeviceMonitor::stop()
@@ -138,12 +153,8 @@ void DeviceMonitor::stop()
     {
         monitorThreadPtr->join();
     }
-
-    // mut.lock();
-    // running = false;
-    // if (monitorThreadPtr->joinable())
-    // {
-    //     monitorThreadPtr->join();
-    // }
-    // mut.unlock();
+}
+bool DeviceMonitor::get_running()
+{
+    return running;
 }

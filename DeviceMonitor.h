@@ -3,19 +3,13 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <tuple>
 #include <filesystem>
 
 #include <mutex>
-#include <thread> // Do obsługi wątków
-#include <chrono> // Do obsługi czasu
+#include <thread>
+#include <chrono>
 
 #include <jsoncpp/json/json.h>
-
-// #include "rapidjson/document.h"
-// #include "rapidjson/filereadstream.h"
-// #include "rapidjson/filewritestream.h"
-// #include "rapidjson/writer.h"
 
 class Reader
 {
@@ -29,21 +23,20 @@ public:
     void read_config();
     void read_json(std::string filename);
     void print_one();
-    // void print();
 };
 
 class DeviceMonitor
 {
 private:
-    std::thread monitorThread;
     bool running;
     std::unique_ptr<std::thread> monitorThreadPtr;
     std::vector<Reader> readers;
 
 public:
     DeviceMonitor();
-    void get_statuses();
+    // void get_statuses();
+    void get_statuses(std::string folder_name);
     void start();
-    void print_all();
     void stop();
+    bool get_running();
 };
