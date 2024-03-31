@@ -6,6 +6,10 @@
 #include <tuple>
 #include <filesystem>
 
+#include <mutex>
+#include <thread> // Do obsługi wątków
+#include <chrono> // Do obsługi czasu
+
 #include <jsoncpp/json/json.h>
 
 // #include "rapidjson/document.h"
@@ -31,6 +35,9 @@ public:
 class DeviceMonitor
 {
 private:
+    std::thread monitorThread;
+    bool running;
+    std::unique_ptr<std::thread> monitorThreadPtr;
     std::vector<Reader> readers;
 
 public:
@@ -38,4 +45,5 @@ public:
     void get_statuses();
     void start();
     void print_all();
+    void stop();
 };

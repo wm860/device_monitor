@@ -2,20 +2,7 @@
 
 Reader::Reader()
 {
-    // std::cout << "Reading started" << std::endl;
-    /*std::ifstream f("config_data.json");
-    if (!f.is_open())
-    {
-        std::cerr << "Failed to open file." << std::endl;
-        // exit;
-    }
-    else
-    {
-        std::cout << "Configuration file opened" << std::endl;
-    }
-
-    f.close();
-    */
+    // std::cout << "\n\nReading started" << std::endl;
 }
 void Reader::read_config()
 {
@@ -127,9 +114,36 @@ void DeviceMonitor::get_statuses()
         std::string filename = entry.path().filename().string();
         std::cout << filename << "\t:\t";
         Reader reader;
+        // te dwie operacje powinny byc w sekcji krytycznej??
         reader.read_config();
         reader.read_json(filename);
+
         reader.print_one();
         readers.push_back(reader);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+}
+void DeviceMonitor::start()
+{
+    if (!running)
+    {
+        running = true;
+        monitorThreadPtr = std::make_unique<std::thread>(&DeviceMonitor::get_statuses, this);
+    }
+}
+void DeviceMonitor::stop()
+{
+    running = false;
+    if (monitorThreadPtr && monitorThreadPtr->joinable())
+    {
+        monitorThreadPtr->join();
+    }
+
+    // mut.lock();
+    // running = false;
+    // if (monitorThreadPtr->joinable())
+    // {
+    //     monitorThreadPtr->join();
+    // }
+    // mut.unlock();
 }
