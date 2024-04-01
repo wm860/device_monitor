@@ -104,26 +104,9 @@ DeviceMonitor::DeviceMonitor()
     std::cout << "Device Monitor started" << std::endl;
     running = false;
 }
-// void DeviceMonitor::get_statuses()
-// {
-//     std::string folder = "./devices_data";
-//     for (const auto &entry : std::filesystem::directory_iterator(folder))
-//     {
-//         std::string filename = entry.path().filename().string();
-//         std::cout << filename << "\t:\t";
-//         Reader reader;
-
-//         reader.read_config();
-//         reader.read_json(filename);
-
-//         reader.print_one();
-//         readers.push_back(reader);
-//         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//     }
-// }
-void DeviceMonitor::get_statuses(std::string filename)
+void DeviceMonitor::get_statuses()
 {
-    std::string folder = filename;
+    std::string folder = "./devices_data";
     for (const auto &entry : std::filesystem::directory_iterator(folder))
     {
         std::string filename = entry.path().filename().string();
@@ -143,7 +126,7 @@ void DeviceMonitor::start()
     if (!running)
     {
         running = true;
-        monitorThreadPtr = std::make_unique<std::thread>(&DeviceMonitor::get_statuses, this, "devices_data");
+        monitorThreadPtr = std::make_unique<std::thread>(&DeviceMonitor::get_statuses, this);
     }
 }
 void DeviceMonitor::stop()
@@ -157,4 +140,15 @@ void DeviceMonitor::stop()
 bool DeviceMonitor::get_running()
 {
     return running;
+}
+DeviceMonitor::~DeviceMonitor()
+{
+    if (running)
+    {
+        running = false;
+        if (monitorThreadPtr && monitorThreadPtr->joinable())
+        {
+            monitorThreadPtr->join();
+        }
+    }
 }

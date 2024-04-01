@@ -34,8 +34,8 @@ private:
 
 public:
     DeviceMonitor();
-    // void get_statuses();
-    void get_statuses(std::string folder_name);
+    ~DeviceMonitor();
+    void get_statuses();
     void start();
     void stop();
     bool get_running();
