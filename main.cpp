@@ -5,7 +5,7 @@
 int main()
 {
     DeviceMonitor monit;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 300; i++)
     {
         monit.start();
         monit.stop();
