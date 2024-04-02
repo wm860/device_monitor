@@ -1,5 +1,5 @@
 {
   "type": "power supplier",
-  "voltage": 10,
+  "voltage": 30,
   "current": 3.0
 }
