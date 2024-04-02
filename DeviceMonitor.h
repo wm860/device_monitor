@@ -16,13 +16,14 @@ class Reader
 private:
     Json::Value dev_config_val;
     Json::Value dev_val;
-    std::vector<Json::Value> dev_vector;
 
 public:
     Reader();
     void read_config();
     void read_json(std::string filename);
     void print_one();
+    Json::Value get_dev_config_val();
+    Json::Value get_dev_val();
 };
 
 class DeviceMonitor
@@ -31,12 +32,15 @@ private:
     bool running;
     std::unique_ptr<std::thread> monitorThreadPtr;
     std::vector<Reader> readers;
+    int counter;
 
 public:
     DeviceMonitor();
     ~DeviceMonitor();
-    void get_statuses();
-    void start();
+    void get_statuses(int time_interval = 0);
+    void start(int time_interval = 100);
     void stop();
     bool get_running();
+    std::vector<Reader> get_readers();
+    int get_counter();
 };

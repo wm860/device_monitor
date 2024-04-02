@@ -49,8 +49,6 @@ void Reader::read_json(const std::string filename)
         // exit;
     }
     dev_val = val;
-    // float voltage = val["power supplier"]["voltage"].asFloat();
-    // std::cout << "voltage:\t" << voltage << std::endl;
 }
 void Reader::print_one()
 {
@@ -67,15 +65,12 @@ void Reader::print_one()
     std::string type = dev_val["type"].asString();
     if (dev_config_val.isMember(type.c_str()))
     {
-        // std::cout << "Given file exists in configuration file :)\n";
-        // std::cout << type << " data: {";
         std::cout << " { ";
         Json::Value device_params = dev_config_val[type];
         for (auto it = device_params.begin(); it != device_params.end(); ++it)
         {
             std::string key = it.key().asString();
             Json::Value value = *it;
-            // Json::Value dev_val
             if (value.isString())
             {
                 std::string val = dev_val[key].asString();
@@ -96,15 +91,24 @@ void Reader::print_one()
     }
     else
     {
-        std::cerr << "No power supplier data" << std::endl;
+        std::cerr << "No device data" << std::endl;
     }
+}
+Json::Value Reader::get_dev_config_val()
+{
+    return dev_config_val;
+}
+Json::Value Reader::get_dev_val()
+{
+    return dev_val;
 }
 DeviceMonitor::DeviceMonitor()
 {
     std::cout << "Device Monitor started" << std::endl;
     running = false;
+    counter = 0;
 }
-void DeviceMonitor::get_statuses()
+void DeviceMonitor::get_statuses(int time_interval)
 {
     std::string folder = "./devices_data";
     for (const auto &entry : std::filesystem::directory_iterator(folder))
@@ -118,15 +122,16 @@ void DeviceMonitor::get_statuses()
 
         reader.print_one();
         readers.push_back(reader);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        counter++;
+        std::this_thread::sleep_for(std::chrono::milliseconds(time_interval));
     }
 }
-void DeviceMonitor::start()
+void DeviceMonitor::start(int time_interval)
 {
     if (!running)
     {
         running = true;
-        monitorThreadPtr = std::make_unique<std::thread>(&DeviceMonitor::get_statuses, this);
+        monitorThreadPtr = std::make_unique<std::thread>(&DeviceMonitor::get_statuses, this, time_interval);
     }
 }
 void DeviceMonitor::stop()
@@ -140,6 +145,14 @@ void DeviceMonitor::stop()
 bool DeviceMonitor::get_running()
 {
     return running;
+}
+std::vector<Reader> DeviceMonitor::get_readers()
+{
+    return readers;
+}
+int DeviceMonitor::get_counter()
+{
+    return counter;
 }
 DeviceMonitor::~DeviceMonitor()
 {
